@@ -11,8 +11,8 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] private LayerMask GROUND_LAYER;
 
-    [SerializeField] private float moveForce = 5f;
-    [SerializeField] private float jumpForce = 1f;
+    [SerializeField] private float moveForce;
+    [SerializeField] private float jumpForce;
     private float movementX;
     private float movementY;
 
@@ -45,8 +45,10 @@ public class PlayerMovement : MonoBehaviour
         MoveForward();
         if (!isGrounded())
         {
-            if (movementY > -0.8f)
-            movementY -= gravityModifier * Time.deltaTime;
+            if (movementY > -0.65f)
+            {
+                movementY -= gravityModifier * Time.deltaTime;
+            }
         }
         else
         {
