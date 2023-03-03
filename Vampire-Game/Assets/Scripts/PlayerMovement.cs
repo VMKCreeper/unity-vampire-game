@@ -16,6 +16,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float jumpForce;
     private float movementX;
     private float movementY;
+    private float speed;
 
     private bool onGround;
     private bool jumpRequest = false;
@@ -51,11 +52,22 @@ public class PlayerMovement : MonoBehaviour
     void MoveForward()
     {
         movementX = Input.GetAxisRaw("Horizontal");
-        float speed = moveForce - 10;
+        
         // acceleration (WIP)
+        if (movementX == 0)
+        {
+            speed = moveForce - 3;
+        }
+        else
+        {
+            if (speed < moveForce)
+            {
+                speed += 0.5f;
+            }
+        }
 
         // constant speed
-        transform.position += new Vector3(movementX, 0f, 0f) * Time.deltaTime * moveForce;
+        transform.position += new Vector3(speed, 0f, 0f) * Time.deltaTime * movementX;
     }
 
     void Jump()
