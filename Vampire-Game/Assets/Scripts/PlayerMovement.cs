@@ -70,7 +70,7 @@ public class PlayerMovement : MonoBehaviour
 
         float move = Mathf.Pow(Mathf.Abs(speedDiff) * accelRate, velPower) * Mathf.Sign(speedDiff);
 
-        if (hitWall != true)
+        if (hitWall() != true)
         {
             myBody.AddForce(move * Vector2.right);
         }
