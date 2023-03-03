@@ -52,7 +52,6 @@ public class PlayerMovement : MonoBehaviour
     void MoveForward()
     {
         movementX = Input.GetAxisRaw("Horizontal");
-        
         // acceleration (WIP)
         if (movementX == 0)
         {
