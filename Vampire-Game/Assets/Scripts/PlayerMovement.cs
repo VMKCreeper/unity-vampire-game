@@ -30,16 +30,6 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        movementX = Input.GetAxisRaw("Horizontal");
-        
-        // gravity
-        if (!isGrounded() && movementY > -20f){
-            movementY -= gravityModifier * Time.deltaTime;
-        } else if (isGrounded()){
-            myBody.velocity = Vector2.zero;
-        }
-        myBody.velocity = new Vector2(0f, movementY);
-        
         if (Input.GetKeyDown(KeyCode.Space))
         {
             // click jump before touching ground (need timer)
@@ -49,25 +39,20 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (hitCeiling())
+        {
+            movementY = 0;
+        }
+        applyGravity();
         MoveForward();
-
-        if (isGrounded())
-        {
-            if (jumpRequest)
-            {
-                Jump();
-                jumpRequest = false;
-            }
-        }
-        else
-        {
-            
-        }
+        Jump();
     }
 
     void MoveForward()
     {
-        // acceleration
+        movementX = Input.GetAxisRaw("Horizontal");
+        float speed = moveForce - 10;
+        // acceleration (WIP)
 
         // constant speed
         transform.position += new Vector3(movementX, 0f, 0f) * Time.deltaTime * moveForce;
@@ -75,12 +60,52 @@ public class PlayerMovement : MonoBehaviour
 
     void Jump()
     {
-        movementY = jumpForce;
+        if (isGrounded())
+        {
+            if (jumpRequest)
+            {
+                movementY = jumpForce;
+                jumpRequest = false;
+            }
+        }
+    }
+
+    void applyGravity()
+    {
+        if (!isGrounded() && movementY > -20f)
+        {
+            float gravity = gravityModifier; // rise speed (default)
+            if (movementY < 5 && movementY > -5)
+            {
+                // hangtime
+                gravity = gravityModifier - 10;
+            }
+            else if (movementY < -5)
+            {
+                // fall speed (faster than rise)
+                gravity = gravityModifier + 50;
+            }
+            movementY -= gravity * Time.deltaTime;
+        }
+        else if (isGrounded())
+        {
+            if (movementY < 0)
+            {
+                movementY = 0; // reset force when touching ground
+            }
+        }
+        myBody.velocity = new Vector2(0f, movementY);
     }
 
     private bool isGrounded()
     {
         RaycastHit2D raycastHit = Physics2D.BoxCast(boxCollider.bounds.center, boxCollider.bounds.size, 0f, Vector2.down, 0.1f, GROUND_LAYER);
+        return raycastHit.collider != null;
+    }
+
+    private bool hitCeiling()
+    {
+        RaycastHit2D raycastHit = Physics2D.BoxCast(boxCollider.bounds.center, boxCollider.bounds.size, 0f, Vector2.up, 0.1f, GROUND_LAYER);
         return raycastHit.collider != null;
     }
 }

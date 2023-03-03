@@ -270,8 +270,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 544843078}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 5.07, y: 0.2277, z: 0.048782784}
-  m_LocalScale: {x: 0.8580266, y: 4.4222803, z: 1}
+  m_LocalPosition: {x: 5.94, y: -0.04, z: 0.048782784}
+  m_LocalScale: {x: 0.70401084, y: 4.268385, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 103362343}
@@ -400,7 +400,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.0026624203, y: 0.05730331}
+  m_Offset: {x: -0.0008851886, y: 0.0010755062}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -411,7 +411,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.77807736, y: 0.9692519}
+  m_Size: {x: 0.67164886, y: 0.77165437}
   m_EdgeRadius: 0
 --- !u!1 &1088617842
 GameObject:
@@ -550,8 +550,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1291357000}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 3.11, y: 0.1, z: 0.048782784}
-  m_LocalScale: {x: 3.3328297, y: 0.90657455, z: 1}
+  m_LocalPosition: {x: 2.71, y: -0.69, z: 0.048782784}
+  m_LocalScale: {x: 2.8320284, y: 0.6755015, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 103362343}
@@ -772,8 +772,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1586915370}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -2.75, y: -1.82, z: 0.048782784}
-  m_LocalScale: {x: 3.3328297, y: 0.90657455, z: 1}
+  m_LocalPosition: {x: -2.68, y: -2.4, z: 0.048782784}
+  m_LocalScale: {x: 3.0438733, y: 0.6754887, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 103362343}
@@ -866,9 +866,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1676900807}
+  - component: {fileID: 1676900804}
   - component: {fileID: 1676900806}
   - component: {fileID: 1676900805}
-  - component: {fileID: 1676900804}
   - component: {fileID: 1676900808}
   m_Layer: 0
   m_Name: Player
@@ -893,8 +893,8 @@ MonoBehaviour:
   GROUND_LAYER:
     serializedVersion: 2
     m_Bits: 64
-  moveForce: 8
-  jumpForce: 16
+  moveForce: 5
+  jumpForce: 14
 --- !u!212 &1676900805
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -981,8 +981,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1676900803}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.47, y: 2.73, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: -0.595, y: 2.355, z: 0}
+  m_LocalScale: {x: 0.75, y: 0.75, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1081249272}
