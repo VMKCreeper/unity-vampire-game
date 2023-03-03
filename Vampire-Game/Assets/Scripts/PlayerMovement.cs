@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     public float gravityModifier;
+    public float fallGravityMulti;
 
     private Rigidbody2D myBody;
     private BoxCollider2D boxCollider;
@@ -15,7 +16,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float moveForce;
     [SerializeField] private float jumpForce;
     private float movementX;
-    private float movementY;
+    //private float movementY;
     private float speed;
 
     private bool onGround;
@@ -26,6 +27,8 @@ public class PlayerMovement : MonoBehaviour
     {
         myBody = GetComponent<Rigidbody2D>();
         boxCollider = gameObject.transform.GetChild(0).gameObject.GetComponent<BoxCollider2D>();
+        myBody.gravityScale = gravityModifier;
+
     }
 
     // Update is called once per frame
@@ -42,10 +45,11 @@ public class PlayerMovement : MonoBehaviour
     {
         if (hitCeiling())
         {
-            movementY = 0;
+            //movementY = 0;
         }
-        applyGravity();
+        //applyGravity();
         MoveForward();
+        appGravity();
         Jump();
     }
 
@@ -56,7 +60,7 @@ public class PlayerMovement : MonoBehaviour
         float acceleration = 3.5f;
         float decceleration = 3.5f;
 
-        float topSpeed = 7;
+        float topSpeed = 6;
         float targSpeed = movementX * topSpeed;
 
         float speedDiff = targSpeed - myBody.velocity.x;
@@ -66,7 +70,10 @@ public class PlayerMovement : MonoBehaviour
 
         float move = Mathf.Pow(Mathf.Abs(speedDiff) * accelRate, velPower) * Mathf.Sign(speedDiff);
 
-        myBody.AddForce(move * Vector2.right);
+        if (hitWall != true)
+        {
+            myBody.AddForce(move * Vector2.right);
+        }
     }
 
     void Jump()
@@ -75,13 +82,14 @@ public class PlayerMovement : MonoBehaviour
         {
             if (jumpRequest)
             {
-                movementY = jumpForce;
+                //movementY = jumpForce;
+                myBody.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
                 jumpRequest = false;
             }
         }
     }
 
-    void applyGravity()
+/*    void applyGravity()
     {
         if (!isGrounded() && movementY > -20f)
         {
@@ -106,6 +114,18 @@ public class PlayerMovement : MonoBehaviour
             }
         }
         myBody.velocity = new Vector2(0f, movementY);
+    }*/
+
+    void appGravity()
+    {
+        if (myBody.velocity.y < 0)
+        {
+            myBody.gravityScale = gravityModifier * fallGravityMulti;
+        }
+        else
+        {
+            myBody.gravityScale = gravityModifier;
+        }
     }
 
     private bool isGrounded()
@@ -118,5 +138,20 @@ public class PlayerMovement : MonoBehaviour
     {
         RaycastHit2D raycastHit = Physics2D.BoxCast(boxCollider.bounds.center, boxCollider.bounds.size, 0f, Vector2.up, 0.1f, GROUND_LAYER);
         return raycastHit.collider != null;
+    }
+
+    private bool hitWall()
+    {
+        RaycastHit2D raycastLeft = Physics2D.BoxCast(boxCollider.bounds.center, boxCollider.bounds.size, 0f, Vector2.left, 0.1f, GROUND_LAYER);
+        RaycastHit2D raycastRight = Physics2D.BoxCast(boxCollider.bounds.center, boxCollider.bounds.size, 0f, Vector2.right, 0.1f, GROUND_LAYER);
+
+        if (raycastLeft.collider != null || raycastRight.collider != null)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 }
