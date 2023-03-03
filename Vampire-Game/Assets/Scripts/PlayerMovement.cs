@@ -52,10 +52,23 @@ public class PlayerMovement : MonoBehaviour
     {
         movementX = Input.GetAxisRaw("Horizontal");
         float speed = moveForce - 10;
-        // acceleration (WIP)
 
+        float acceleration = 3.5f;
+        float decceleration = 3.5f;
+
+        float topSpeed = 7;
+        float targSpeed = movementX * topSpeed;
+        // acceleration (WIP)
+        float speedDiff = targSpeed - myBody.velocity.x;
+        float accelRate = (Mathf.Abs(targSpeed) > 0.01f) ? acceleration : decceleration;
+
+        float velPower = 2;
+
+        float move = Mathf.Pow(Mathf.Abs(speedDiff) * accelRate, velPower) * Mathf.Sign(speedDiff);
+
+        myBody.AddForce(move * Vector2.right);
         // constant speed
-        transform.position += new Vector3(movementX, 0f, 0f) * Time.deltaTime * moveForce;
+        //transform.position += new Vector3(movementX, 0f, 0f) * Time.deltaTime * moveForce;
     }
 
     void Jump()
