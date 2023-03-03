@@ -52,16 +52,16 @@ public class PlayerMovement : MonoBehaviour
     void MoveForward()
     {
         movementX = Input.GetAxisRaw("Horizontal");
-        // acceleration (WIP)
+        // acceleration
         if (movementX == 0)
         {
-            speed = moveForce - 3;
+            speed = moveForce - 1;
         }
         else
         {
-            if (speed < moveForce)
+            if (speed < moveForce && isGrounded())
             {
-                speed += 0.5f;
+                speed += 0.25f;
             }
         }
 
