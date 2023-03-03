@@ -53,35 +53,22 @@ public class PlayerMovement : MonoBehaviour
     void MoveForward()
     {
         movementX = Input.GetAxisRaw("Horizontal");
-        // acceleration
-        // if (movementX == 0)
-        // {
-        //     speed = moveForce - 1;
-        // }
-        // else
-        // {
-        //     if (speed < moveForce && isGrounded())
-        //     {
-        //         speed += 0.25f;
-        //     }
-        // }
-
         // constant speed
-        transform.position += new Vector3(speed, 0f, 0f) * Time.deltaTime * movementX;
-        // float acceleration = 3.5f;
-        // float decceleration = 3.5f;
 
-        // float topSpeed = 7;
-        // float targSpeed = movementX * topSpeed;
+        float acceleration = 3.5f;
+        float decceleration = 3.5f;
 
-        // float speedDiff = targSpeed - myBody.velocity.x;
-        // float accelRate = (Mathf.Abs(targSpeed) > 0.01f) ? acceleration : decceleration;
+        float topSpeed = 6;
+        float targSpeed = movementX * topSpeed;
 
-        // float velPower = 2;
+        float speedDiff = targSpeed - myBody.velocity.x;
+        float accelRate = (Mathf.Abs(targSpeed) > 0.01f) ? acceleration : decceleration;
 
-        // move = Mathf.Pow(Mathf.Abs(speedDiff) * accelRate, velPower) * Mathf.Sign(speedDiff);
-        // Debug.Log(move);
-        move = moveForce * movementX;
+        float velPower = 2;
+
+        float move = Mathf.Pow(Mathf.Abs(speedDiff) * accelRate, velPower) * Mathf.Sign(speedDiff);
+
+        myBody.AddForce(move * Vector2.right);
     }
 
     void Jump()
@@ -98,6 +85,11 @@ public class PlayerMovement : MonoBehaviour
 
     void applyGravity()
     {
+        if(hitWall() && (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D)))
+        {
+            movementY = 0;
+            return;
+        }
         if (!isGrounded() && movementY > -20f)
         {
             float gravity = gravityModifier; // rise speed (default)
@@ -133,5 +125,20 @@ public class PlayerMovement : MonoBehaviour
     {
         RaycastHit2D raycastHit = Physics2D.BoxCast(boxCollider.bounds.center, boxCollider.bounds.size, 0f, Vector2.up, 0.1f, GROUND_LAYER);
         return raycastHit.collider != null;
+    }
+
+    private bool hitWall()
+    {
+        RaycastHit2D raycastLeft = Physics2D.BoxCast(boxCollider.bounds.center, boxCollider.bounds.size, 0f, Vector2.left, 0.01f, GROUND_LAYER);
+        RaycastHit2D raycastRight = Physics2D.BoxCast(boxCollider.bounds.center, boxCollider.bounds.size, 0f, Vector2.right, 0.01f, GROUND_LAYER);
+        
+        if (raycastLeft.collider != null || raycastRight.collider != null)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 }
