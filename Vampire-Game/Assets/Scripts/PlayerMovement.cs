@@ -17,6 +17,7 @@ public class PlayerMovement : MonoBehaviour
     private float movementX;
     private float movementY;
     private float speed;
+    private float move;
 
     private bool onGround;
     private bool jumpRequest = false;
@@ -53,20 +54,34 @@ public class PlayerMovement : MonoBehaviour
     {
         movementX = Input.GetAxisRaw("Horizontal");
         // acceleration
-        if (movementX == 0)
-        {
-            speed = moveForce - 1;
-        }
-        else
-        {
-            if (speed < moveForce && isGrounded())
-            {
-                speed += 0.25f;
-            }
-        }
+        // if (movementX == 0)
+        // {
+        //     speed = moveForce - 1;
+        // }
+        // else
+        // {
+        //     if (speed < moveForce && isGrounded())
+        //     {
+        //         speed += 0.25f;
+        //     }
+        // }
 
         // constant speed
         transform.position += new Vector3(speed, 0f, 0f) * Time.deltaTime * movementX;
+        // float acceleration = 3.5f;
+        // float decceleration = 3.5f;
+
+        // float topSpeed = 7;
+        // float targSpeed = movementX * topSpeed;
+
+        // float speedDiff = targSpeed - myBody.velocity.x;
+        // float accelRate = (Mathf.Abs(targSpeed) > 0.01f) ? acceleration : decceleration;
+
+        // float velPower = 2;
+
+        // move = Mathf.Pow(Mathf.Abs(speedDiff) * accelRate, velPower) * Mathf.Sign(speedDiff);
+        // Debug.Log(move);
+        move = moveForce * movementX;
     }
 
     void Jump()
@@ -105,7 +120,7 @@ public class PlayerMovement : MonoBehaviour
                 movementY = 0; // reset force when touching ground
             }
         }
-        myBody.velocity = new Vector2(0f, movementY);
+        myBody.velocity = new Vector2(move, movementY); // changed
     }
 
     private bool isGrounded()
