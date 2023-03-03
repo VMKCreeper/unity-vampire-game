@@ -16,7 +16,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float moveForce;
     [SerializeField] private float jumpForce;
     private float movementX;
-    //private float movementY;
+    private float movementY;
     private float speed;
 
     private bool onGround;
@@ -70,7 +70,7 @@ public class PlayerMovement : MonoBehaviour
 
         float move = Mathf.Pow(Mathf.Abs(speedDiff) * accelRate, velPower) * Mathf.Sign(speedDiff);
 
-        if (hitWall() != true)
+        if (!hitWall())
         {
             myBody.AddForce(move * Vector2.right);
         }
@@ -89,32 +89,32 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-/*    void applyGravity()
-    {
-        if (!isGrounded() && movementY > -20f)
-        {
-            float gravity = gravityModifier; // rise speed (default)
-            if (movementY < 5 && movementY > -5)
-            {
-                // hangtime
-                gravity = gravityModifier - 10;
-            }
-            else if (movementY < -5)
-            {
-                // fall speed (faster than rise)
-                gravity = gravityModifier + 50;
-            }
-            movementY -= gravity * Time.deltaTime;
-        }
-        else if (isGrounded())
-        {
-            if (movementY < 0)
-            {
-                movementY = 0; // reset force when touching ground
-            }
-        }
-        myBody.velocity = new Vector2(0f, movementY);
-    }*/
+    //void applyGravity()
+    //{
+    //    if (!isGrounded() && movementY > -20f)
+    //    {
+    //        float gravity = gravityModifier; // rise speed (default)
+    //        if (movementY < 5 && movementY > -5)
+    //        {
+    //            // hangtime
+    //            gravity = gravityModifier - 10;
+    //        }
+    //        else if (movementY < -5)
+    //        {
+    //            // fall speed (faster than rise)
+    //            gravity = gravityModifier + 50;
+    //        }
+    //        movementY -= gravity * Time.deltaTime;
+    //    }
+    //    else if (isGrounded())
+    //    {
+    //        if (movementY < 0)
+    //        {
+    //            movementY = 0; // reset force when touching ground
+    //        }
+    //    }
+    //    myBody.velocity = new Vector2(move, movementY); // changed
+    //}
 
     void appGravity()
     {
@@ -142,8 +142,8 @@ public class PlayerMovement : MonoBehaviour
 
     private bool hitWall()
     {
-        RaycastHit2D raycastLeft = Physics2D.BoxCast(boxCollider.bounds.center, boxCollider.bounds.size, 0f, Vector2.left, 0.1f, GROUND_LAYER);
-        RaycastHit2D raycastRight = Physics2D.BoxCast(boxCollider.bounds.center, boxCollider.bounds.size, 0f, Vector2.right, 0.1f, GROUND_LAYER);
+        RaycastHit2D raycastLeft = Physics2D.BoxCast(boxCollider.bounds.center, boxCollider.bounds.size, 0f, Vector2.left, 0.01f, GROUND_LAYER);
+        RaycastHit2D raycastRight = Physics2D.BoxCast(boxCollider.bounds.center, boxCollider.bounds.size, 0f, Vector2.right, 0.01f, GROUND_LAYER);
 
         if (raycastLeft.collider != null || raycastRight.collider != null)
         {
