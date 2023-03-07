@@ -19,7 +19,11 @@ public class PlayerMovement : MonoBehaviour
     private float speed;
     private float move;
 
-    private bool onGround;
+    private float wallJumpDirection = 1f;
+    private float movementMultiplier = 1f;
+
+    private bool canJump;
+    private bool isWallJumping = false;
     private bool jumpRequest = false;
 
     // Start is called before the first frame update
@@ -50,7 +54,7 @@ public class PlayerMovement : MonoBehaviour
         Jump();
     }
 
-    void MoveForward()
+    private void MoveForward()
     {
         movementX = Input.GetAxisRaw("Horizontal");
         // constant speed
@@ -58,8 +62,7 @@ public class PlayerMovement : MonoBehaviour
         float acceleration = 3.5f;
         float decceleration = 3.5f;
 
-        float topSpeed = 6;
-        float targSpeed = movementX * topSpeed;
+        float targSpeed = movementX * moveForce;
 
         float speedDiff = targSpeed - myBody.velocity.x;
         float accelRate = (Mathf.Abs(targSpeed) > 0.01f) ? acceleration : decceleration;
@@ -68,24 +71,32 @@ public class PlayerMovement : MonoBehaviour
 
         float move = Mathf.Pow(Mathf.Abs(speedDiff) * accelRate, velPower) * Mathf.Sign(speedDiff);
 
-        myBody.AddForce(move * Vector2.right);
+        myBody.AddForce(move * Vector2.right * movementMultiplier);
     }
 
-    void Jump()
+    private void Jump()
     {
-        if (isGrounded())
+        if (jumpRequest)
         {
-            if (jumpRequest)
-            {
+            if(isGrounded()){
                 movementY = jumpForce;
-                jumpRequest = false;
+            } else if(hitWall()){
+                isWallJumping = true;
+                movementMultiplier = 0.1f;
+                wallJumpDirection = movementX;
+                movementY = jumpForce;
             }
+            jumpRequest = false;
+        }
+        if(isWallJumping){
+            myBody.velocity = new Vector2(moveForce * -wallJumpDirection, movementY);
         }
     }
 
-    void applyGravity()
+    private void applyGravity()
     {
-        if(hitWall() && (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D)))
+        // wallhang
+        if(hitWall() && (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D)) && !isWallJumping && movementY < 0)
         {
             movementY = 0;
             return;
@@ -97,6 +108,9 @@ public class PlayerMovement : MonoBehaviour
             {
                 // hangtime
                 gravity = gravityModifier - 10;
+                // regain controll of jump
+                isWallJumping = false;
+                movementMultiplier = 1;
             }
             else if (movementY < -5)
             {
@@ -112,7 +126,13 @@ public class PlayerMovement : MonoBehaviour
                 movementY = 0; // reset force when touching ground
             }
         }
-        myBody.velocity = new Vector2(move, movementY); // changed
+        myBody.velocity = new Vector2(0f, movementY);
+    }
+
+    private void dash(){
+        // acceleration
+        // constant speed
+        // decceleration
     }
 
     private bool isGrounded()
