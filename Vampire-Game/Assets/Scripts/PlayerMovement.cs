@@ -79,7 +79,6 @@ public class PlayerMovement : MonoBehaviour
     {
         if (jumpRequest)
         {
-            wallJumpDirection = movementX;
             if (isGrounded()){
                 movementY = jumpForce;
             } else if(hitWall() && wallHanging){
@@ -90,7 +89,7 @@ public class PlayerMovement : MonoBehaviour
             jumpRequest = false;
         }
         if(isWallJumping){
-            myBody.velocity = new Vector2(moveForce * -wallJumpDirection, movementY);
+            myBody.velocity = new Vector2((moveForce + 1) * wallJumpDirection , movementY);
         }
     }
 
@@ -99,6 +98,7 @@ public class PlayerMovement : MonoBehaviour
         // wallhang
         if(hitWall() && (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D)) && !isWallJumping && movementY < 0)
         {
+            // movementY = 0;
             wallHanging = true;
             return;
         }
@@ -110,10 +110,12 @@ public class PlayerMovement : MonoBehaviour
             if (movementY < 5 && movementY > -5)
             {
                 // hangtime
-                gravity = gravityModifier - 10;
+                gravity = gravityModifier - 15;
                 // regain controll of jump
-                isWallJumping = false;
-                movementMultiplier = 1;
+                if (movementY < 0){
+                    isWallJumping = false; 
+                    movementMultiplier = 1;
+                }
             }
             else if (movementY < -5)
             {
@@ -157,6 +159,12 @@ public class PlayerMovement : MonoBehaviour
         
         if (raycastLeft.collider != null || raycastRight.collider != null)
         {
+            // need fix
+            if (raycastLeft.collider != null){
+                wallJumpDirection = 1;
+            } else if (raycastRight.collider != null){
+                wallJumpDirection = -1;
+            }
             return true;
         }
         else
