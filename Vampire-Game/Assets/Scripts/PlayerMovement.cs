@@ -26,6 +26,7 @@ public class PlayerMovement : MonoBehaviour
     private bool wallHanging = false;
     private bool isWallJumping = false;
     private bool jumpRequest = false;
+    private bool dashRequest = false;
 
     // Start is called before the first frame update
     void Start()
@@ -42,6 +43,10 @@ public class PlayerMovement : MonoBehaviour
             // click jump before touching ground (need timer)
             jumpRequest = true;
         }
+        if (Input.GetKeyDown(KeyCode.LeftShift))
+        {
+            dashRequest = true;
+        }
     }
 
     void FixedUpdate()
@@ -50,6 +55,7 @@ public class PlayerMovement : MonoBehaviour
         {
             movementY = 0;
         }
+        dash();
         applyGravity();
         MoveForward();
         Jump();
@@ -137,6 +143,19 @@ public class PlayerMovement : MonoBehaviour
     }
 
     private void dash(){
+        float horizontal = Input.GetAxisRaw("Horizontal");
+        float vertical = Input.GetAxisRaw("Vertical");
+
+        float xAxis = jumpForce * horizontal;
+        float yAxis = jumpForce * vertical;
+
+        Vector2 forceApp = new Vector2(xAxis * movementMultiplier, yAxis * movementMultiplier);
+        if (dashRequest)
+        {
+            myBody.AddForce(forceApp, ForceMode2D.Impulse);
+            Debug.Log(forceApp);
+            dashRequest = false;
+        }
         // acceleration
         // constant speed
         // decceleration
