@@ -81,24 +81,26 @@ public class PlayerMovement : MonoBehaviour
         {
             if (isGrounded()){
                 movementY = jumpForce;
+                jumpRequest = false;
             } else if(hitWall() && wallHanging){
                 isWallJumping = true;
                 movementMultiplier = 0.1f;
                 movementY = jumpForce;
+                jumpRequest = false;
             }
-            jumpRequest = false;
         }
         if(isWallJumping){
-            myBody.velocity = new Vector2((moveForce + 1) * wallJumpDirection , movementY);
+            myBody.velocity = new Vector2((moveForce + 1) * wallJumpDirection, movementY);
         }
     }
 
     private void applyGravity()
     {
         // wallhang
-        if(hitWall() && (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D)) && !isWallJumping && movementY < 0)
+        if(hitWall() && (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D)) && !isWallJumping && movementY <= 0)
         {
-            // movementY = 0;
+            movementY = 0;
+            myBody.velocity = Vector3.zero;
             wallHanging = true;
             return;
         }
@@ -160,10 +162,16 @@ public class PlayerMovement : MonoBehaviour
         if (raycastLeft.collider != null || raycastRight.collider != null)
         {
             // need fix
-            if (raycastLeft.collider != null){
-                wallJumpDirection = 1;
-            } else if (raycastRight.collider != null){
-                wallJumpDirection = -1;
+            if (jumpRequest && wallHanging)
+            {
+                if (raycastLeft.collider != null)
+                {
+                    wallJumpDirection = 1;
+                }
+                else if (raycastRight.collider != null)
+                {
+                    wallJumpDirection = -1;
+                }
             }
             return true;
         }
