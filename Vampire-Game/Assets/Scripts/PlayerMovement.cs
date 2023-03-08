@@ -23,6 +23,7 @@ public class PlayerMovement : MonoBehaviour
     private float movementMultiplier = 1f;
 
     private bool canJump;
+    private bool wallHanging = false;
     private bool isWallJumping = false;
     private bool jumpRequest = false;
 
@@ -78,12 +79,12 @@ public class PlayerMovement : MonoBehaviour
     {
         if (jumpRequest)
         {
-            if(isGrounded()){
+            wallJumpDirection = movementX;
+            if (isGrounded()){
                 movementY = jumpForce;
-            } else if(hitWall()){
+            } else if(hitWall() && wallHanging){
                 isWallJumping = true;
                 movementMultiplier = 0.1f;
-                wallJumpDirection = movementX;
                 movementY = jumpForce;
             }
             jumpRequest = false;
@@ -98,10 +99,12 @@ public class PlayerMovement : MonoBehaviour
         // wallhang
         if(hitWall() && (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D)) && !isWallJumping && movementY < 0)
         {
-            movementY = 0;
+            wallHanging = true;
             return;
         }
-        if (!isGrounded() && movementY > -20f)
+        wallHanging = false;
+
+        if (!isGrounded() && movementY > -20f && !wallHanging)
         {
             float gravity = gravityModifier; // rise speed (default)
             if (movementY < 5 && movementY > -5)
