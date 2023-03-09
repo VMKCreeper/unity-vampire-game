@@ -14,6 +14,7 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] private float moveForce;
     [SerializeField] private float jumpForce;
+    [SerializeField] private float dashForce;
     private float movementX;
     private float movementY;
     private float speed;
@@ -22,11 +23,13 @@ public class PlayerMovement : MonoBehaviour
     private float wallJumpDirection = 1f;
     private float movementMultiplier = 1f;
 
-    private bool canJump;
-    private bool wallHanging = false;
+    private bool isWallHanging = false;
     private bool isWallJumping = false;
+    private bool isDashing = false;
+
     private bool jumpRequest = false;
     private bool dashRequest = false;
+    private bool canDash = true;
 
     // Start is called before the first frame update
     void Start()
@@ -42,8 +45,9 @@ public class PlayerMovement : MonoBehaviour
         {
             // click jump before touching ground (need timer)
             jumpRequest = true;
+            StartCoroutine(jumpGrace(0.1f));
         }
-        if (Input.GetKeyDown(KeyCode.LeftShift))
+        if (Input.GetKeyDown(KeyCode.LeftShift) && canDash)
         {
             dashRequest = true;
         }
@@ -55,13 +59,23 @@ public class PlayerMovement : MonoBehaviour
         {
             movementY = 0;
         }
-        dash();
-        applyGravity();
-        MoveForward();
-        Jump();
+        if (isGrounded() || isWallHanging)
+        {
+            canDash = true;
+        }
+        if (dashRequest)
+        {
+            StartCoroutine(dash());
+        }
+        if (!isDashing)
+        {
+            applyGravity();
+            moveForward();
+        }
+        jump();
     }
 
-    private void MoveForward()
+    private void moveForward()
     {
         movementX = Input.GetAxisRaw("Horizontal");
         // constant speed
@@ -81,14 +95,16 @@ public class PlayerMovement : MonoBehaviour
         myBody.AddForce(move * Vector2.right * movementMultiplier);
     }
 
-    private void Jump()
+    private void jump()
     {
         if (jumpRequest)
         {
             if (isGrounded()){
                 movementY = jumpForce;
                 jumpRequest = false;
-            } else if(hitWall() && wallHanging){
+            } else if(hitWall() && isWallHanging)
+            {
+                // wall jump
                 isWallJumping = true;
                 movementMultiplier = 0.1f;
                 movementY = jumpForce;
@@ -103,16 +119,16 @@ public class PlayerMovement : MonoBehaviour
     private void applyGravity()
     {
         // wallhang
-        if(hitWall() && (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D)) && !isWallJumping && movementY <= 0)
+        if(hitWall() && (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D)) && movementY <= 0 && !isWallJumping)
         {
             movementY = 0;
             myBody.velocity = Vector3.zero;
-            wallHanging = true;
+            isWallHanging = true;
             return;
         }
-        wallHanging = false;
+        isWallHanging = false;
 
-        if (!isGrounded() && movementY > -20f && !wallHanging)
+        if (!isGrounded() && movementY > -20f && !isWallHanging)
         {
             float gravity = gravityModifier; // rise speed (default)
             if (movementY < 5 && movementY > -5)
@@ -142,20 +158,38 @@ public class PlayerMovement : MonoBehaviour
         myBody.velocity = new Vector2(0f, movementY);
     }
 
-    private void dash(){
+    private IEnumerator dash(){
         float horizontal = Input.GetAxisRaw("Horizontal");
         float vertical = Input.GetAxisRaw("Vertical");
 
-        float xAxis = jumpForce * horizontal;
-        float yAxis = jumpForce * vertical;
-
-        Vector2 forceApp = new Vector2(xAxis * movementMultiplier, yAxis * movementMultiplier);
-        if (dashRequest)
+        if ((Input.GetKey(KeyCode.A) && Input.GetKey(KeyCode.D)) || (Input.GetKey(KeyCode.W) && Input.GetKey(KeyCode.S)))
         {
-            myBody.AddForce(forceApp, ForceMode2D.Impulse);
-            Debug.Log(forceApp);
+            // prevent hovering in air when holding a and d or w and s
             dashRequest = false;
+            yield break;
         }
+
+        float dashModifier = 1;
+        if (Mathf.Abs(horizontal) + Mathf.Abs(vertical) == 2)
+        {
+            dashModifier = 0.75f; // diagonal speed decrease cuz maths make it faster
+        }
+
+        float xAxis = dashForce * horizontal * dashModifier;
+        float yAxis = dashForce * vertical * dashModifier;
+
+        myBody.velocity = new Vector2(xAxis, yAxis);
+
+        isDashing = true;
+        // reset
+        isWallJumping = false;
+        dashRequest = false;
+        canDash = false;
+        movementY = 0;
+
+        yield return new WaitForSeconds(0.2f);
+        isDashing = false;
+
         // acceleration
         // constant speed
         // decceleration
@@ -180,8 +214,7 @@ public class PlayerMovement : MonoBehaviour
         
         if (raycastLeft.collider != null || raycastRight.collider != null)
         {
-            // need fix
-            if (jumpRequest && wallHanging)
+            if (jumpRequest && isWallHanging)
             {
                 if (raycastLeft.collider != null)
                 {
@@ -198,5 +231,11 @@ public class PlayerMovement : MonoBehaviour
         {
             return false;
         }
+    }
+
+    private IEnumerator jumpGrace(float seconds)
+    {
+        yield return new WaitForSeconds(seconds);
+        jumpRequest = false;
     }
 }
