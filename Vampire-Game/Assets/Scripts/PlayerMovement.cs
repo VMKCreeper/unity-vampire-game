@@ -57,7 +57,6 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
-        Debug.Log(movementY);
         if (hitCeiling())
         {
             movementY = 0;
