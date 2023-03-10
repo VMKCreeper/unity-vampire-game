@@ -15,6 +15,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float moveForce;
     [SerializeField] private float jumpForce;
     [SerializeField] private float dashForce;
+    
     private float movementX;
     private float movementY;
     private float speed;
@@ -25,6 +26,7 @@ public class PlayerMovement : MonoBehaviour
 
     private bool isWallHanging = false;
     private bool isWallJumping = false;
+    private bool isWallClimbing = false;
     private bool isDashing = false;
 
     private bool jumpRequest = false;
@@ -55,6 +57,7 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
+        Debug.Log(movementY);
         if (hitCeiling())
         {
             movementY = 0;
@@ -72,13 +75,14 @@ public class PlayerMovement : MonoBehaviour
             applyGravity();
             moveForward();
         }
+        wallClimb();
         jump();
     }
 
     private void moveForward()
     {
         movementX = Input.GetAxisRaw("Horizontal");
-        // constant speed
+        // need fix
 
         float acceleration = 3.5f;
         float decceleration = 3.5f;
@@ -128,7 +132,7 @@ public class PlayerMovement : MonoBehaviour
         }
         isWallHanging = false;
 
-        if (!isGrounded() && movementY > -20f && !isWallHanging)
+        if (!isGrounded() && movementY > -20f)
         {
             float gravity = gravityModifier; // rise speed (default)
             if (movementY < 5 && movementY > -5)
@@ -137,7 +141,7 @@ public class PlayerMovement : MonoBehaviour
                 gravity = gravityModifier - 15;
                 // regain controll of jump
                 if (movementY < 0){
-                    isWallJumping = false; 
+                    isWallJumping = false;
                     movementMultiplier = 1;
                 }
             }
@@ -158,14 +162,26 @@ public class PlayerMovement : MonoBehaviour
         myBody.velocity = new Vector2(0f, movementY);
     }
 
+    private void wallClimb(){
+        // need stanima bar
+        float vertical = Input.GetAxisRaw("Vertical");
+        if(vertical != 0 && isWallHanging){
+            isWallClimbing = true;
+            movementY = 0;
+            myBody.AddForce(Vector2.up * 200 * vertical);
+            return;
+        }
+        isWallClimbing = false;
+    }
+
     private IEnumerator dash(){
+        dashRequest = false;
         float horizontal = Input.GetAxisRaw("Horizontal");
         float vertical = Input.GetAxisRaw("Vertical");
 
         if ((Input.GetKey(KeyCode.A) && Input.GetKey(KeyCode.D)) || (Input.GetKey(KeyCode.W) && Input.GetKey(KeyCode.S)))
         {
             // prevent hovering in air when holding a and d or w and s
-            dashRequest = false;
             yield break;
         }
 
@@ -175,29 +191,30 @@ public class PlayerMovement : MonoBehaviour
             dashModifier = 0.75f; // diagonal speed decrease cuz maths make it faster
         }
 
-        float xAxis = dashForce * horizontal * dashModifier;
-        float yAxis = dashForce * vertical * dashModifier;
-
-        myBody.velocity = new Vector2(xAxis, yAxis);
+        float xAxis = dashForce * horizontal;
+        float yAxis = dashForce * vertical;
 
         isDashing = true;
         // reset
         isWallJumping = false;
-        dashRequest = false;
         canDash = false;
         movementY = 0;
 
-        yield return new WaitForSeconds(0.2f);
-        isDashing = false;
-
         // acceleration
+        myBody.velocity = new Vector2(xAxis * (dashModifier - 0.2f), yAxis * (dashModifier - 0.2f));
+        yield return new WaitForSeconds(0.05f);
         // constant speed
+        myBody.velocity = new Vector2(xAxis * (dashModifier), yAxis * (dashModifier));
+        yield return new WaitForSeconds(0.1f);
         // decceleration
+        myBody.velocity = new Vector2(xAxis * (dashModifier - 0.2f), yAxis * (dashModifier - 0.2f));
+        yield return new WaitForSeconds(0.05f);
+        isDashing = false;
     }
 
     private bool isGrounded()
     {
-        RaycastHit2D raycastHit = Physics2D.BoxCast(boxCollider.bounds.center, boxCollider.bounds.size, 0f, Vector2.down, 0.1f, GROUND_LAYER);
+        RaycastHit2D raycastHit = Physics2D.BoxCast(boxCollider.bounds.center, boxCollider.bounds.size, 0f, Vector2.down, 0.03f, GROUND_LAYER);
         return raycastHit.collider != null;
     }
 
@@ -209,8 +226,8 @@ public class PlayerMovement : MonoBehaviour
 
     private bool hitWall()
     {
-        RaycastHit2D raycastLeft = Physics2D.BoxCast(boxCollider.bounds.center, boxCollider.bounds.size, 0f, Vector2.left, 0.01f, GROUND_LAYER);
-        RaycastHit2D raycastRight = Physics2D.BoxCast(boxCollider.bounds.center, boxCollider.bounds.size, 0f, Vector2.right, 0.01f, GROUND_LAYER);
+        RaycastHit2D raycastLeft = Physics2D.BoxCast(boxCollider.bounds.center, boxCollider.bounds.size, 0f, Vector2.left, 0.03f, GROUND_LAYER);
+        RaycastHit2D raycastRight = Physics2D.BoxCast(boxCollider.bounds.center, boxCollider.bounds.size, 0f, Vector2.right, 0.03f, GROUND_LAYER);
         
         if (raycastLeft.collider != null || raycastRight.collider != null)
         {

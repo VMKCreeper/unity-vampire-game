@@ -153,11 +153,11 @@ Transform:
   m_Children:
   - {fileID: 1918529211}
   - {fileID: 1401991983}
-  - {fileID: 1088617843}
   - {fileID: 1586915371}
   - {fileID: 1291357001}
   - {fileID: 544843079}
   - {fileID: 1044282633}
+  - {fileID: 1088617843}
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -276,7 +276,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 103362343}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!61 &544843080
 BoxCollider2D:
@@ -387,7 +387,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 103362343}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!61 &1044282634
 BoxCollider2D:
@@ -512,7 +512,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.0003389418, y: 0.0010755062}
+  m_Offset: {x: -0.00062286854, y: -0.05501461}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -523,7 +523,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.99754876, y: 0.77165437}
+  m_Size: {x: 0.9963075, y: 0.8838346}
   m_EdgeRadius: 0
 --- !u!1 &1088617842
 GameObject:
@@ -556,7 +556,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 103362343}
-  m_RootOrder: 2
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!61 &1088617844
 BoxCollider2D:
@@ -667,7 +667,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 103362343}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!61 &1291357002
 BoxCollider2D:
@@ -889,7 +889,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 103362343}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!61 &1586915372
 BoxCollider2D:
