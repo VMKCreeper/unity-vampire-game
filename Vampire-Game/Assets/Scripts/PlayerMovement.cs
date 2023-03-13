@@ -25,8 +25,8 @@ public class PlayerMovement : MonoBehaviour
     private float movementMultiplier = 1f;
 
     private bool isWallHanging = false;
+    private bool isCeilingHanging = false;
     private bool isWallJumping = false;
-    private bool isWallClimbing = false;
     private bool isDashing = false;
 
     private bool jumpRequest = false;
@@ -69,12 +69,18 @@ public class PlayerMovement : MonoBehaviour
         {
             StartCoroutine(dash());
         }
-        if (!isDashing)
+        if (!isDashing && !isCeilingHanging)
         {
-            applyGravity();
+            if (!isWallHanging)
+            {
+                applyGravity();
+            }
             moveForward();
         }
+        wallHang();
         wallClimb();
+        ceilingHang();
+        ceilingClimb();
         jump();
     }
 
@@ -119,10 +125,9 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    private void applyGravity()
+    private void wallHang()
     {
-        // wallhang
-        if(hitWall() && (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D)) && movementY <= 0 && !isWallJumping)
+        if (hitWall() && (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D)) && movementY <= 0 && !isWallJumping)
         {
             movementY = 0;
             myBody.velocity = Vector3.zero;
@@ -130,7 +135,22 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
         isWallHanging = false;
+    }
 
+    private void ceilingHang()
+    {
+        if (hitCeiling() && Input.GetKey(KeyCode.W))
+        {
+            movementY = 0;
+            myBody.velocity = Vector3.zero;
+            isCeilingHanging = true;
+            return;
+        }
+        isCeilingHanging = false;
+    }
+
+    private void applyGravity()
+    {
         if (!isGrounded() && movementY > -20f)
         {
             float gravity = gravityModifier; // rise speed (default)
@@ -138,7 +158,7 @@ public class PlayerMovement : MonoBehaviour
             {
                 // hangtime
                 gravity = gravityModifier - 15;
-                // regain controll of jump
+                // regain control of jump
                 if (movementY < 0){
                     isWallJumping = false;
                     movementMultiplier = 1;
@@ -165,12 +185,20 @@ public class PlayerMovement : MonoBehaviour
         // need stanima bar
         float vertical = Input.GetAxisRaw("Vertical");
         if(vertical != 0 && isWallHanging){
-            isWallClimbing = true;
             movementY = 0;
             myBody.AddForce(Vector2.up * 200 * vertical);
-            return;
         }
-        isWallClimbing = false;
+    }
+
+    private void ceilingClimb()
+    {
+        // need stanima bar
+        float horizontal = Input.GetAxisRaw("Horizontal");
+        if (horizontal != 0 && isCeilingHanging)
+        {
+            movementY = 0;
+            myBody.AddForce(Vector2.right * 150 * horizontal);
+        }
     }
 
     private IEnumerator dash(){
