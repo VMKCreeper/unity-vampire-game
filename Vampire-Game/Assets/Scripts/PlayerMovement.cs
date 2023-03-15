@@ -8,7 +8,6 @@ public class PlayerMovement : MonoBehaviour
 
     private Rigidbody2D myBody;
     private BoxCollider2D boxCollider;
-    private BoxCollider2D wallCollider;
 
     [SerializeField] private LayerMask GROUND_LAYER;
 
@@ -206,7 +205,7 @@ public class PlayerMovement : MonoBehaviour
         float horizontal = Input.GetAxisRaw("Horizontal");
         float vertical = Input.GetAxisRaw("Vertical");
 
-        if ((Input.GetKey(KeyCode.A) && Input.GetKey(KeyCode.D)) || (Input.GetKey(KeyCode.W) && Input.GetKey(KeyCode.S)))
+        if ((Input.GetKey(KeyCode.A) && Input.GetKey(KeyCode.D)) || (Input.GetKey(KeyCode.W) && Input.GetKey(KeyCode.S)) || (horizontal == 0 && vertical == 0))
         {
             // prevent hovering in air when holding a and d or w and s
             yield break;
